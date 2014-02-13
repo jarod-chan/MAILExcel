@@ -1,0 +1,9 @@
+MAILExcel
+desc: send email from excel data
+tool: nodejs,node-webkit
+language:chinese
+
+need nodejs module:
+ async
+ nodemailer
+ tiny

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>MAILExcel</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" >
+    <script src="jquery/jquery-2.0.3.js"></script>
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+  	
+  	<div class="navbar">
+	    <div class="navbar-inner">
+	        <div class="container">
+	            <ul class="nav">
+	                <a class="brand" href="#">MAILExcel</a>
+	                <li ><a href="mail.html">发送邮件</a></li>
+	                <li class="dropdown active" id="accountmenu">
+	                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">配置<b class="caret"></b></a>
+	                    <ul class="dropdown-menu">
+	                        <li><a href="serverinfo.html">服务器</a></li>
+	                        <li><a href="userinfo.html">员工邮件</a></li>
+	                    </ul>
+	                </li> 
+	            </ul>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="container">
+		<h2>服务器</h2> 
+		<form class="form-horizontal" >
+		  <div class="control-group">
+		    <label class="control-label" for="host">主机</label>
+		    <div class="controls">
+		      <input type="text" name="host" placeholder="主机"><strong>:</strong>
+		      <input type="text" class="input-mini" name="port" placeholder="端口">
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="email">邮箱</label>
+		    <div class="controls">
+		      <input type="text" name="email" placeholder="邮箱">
+		    </div>
+		  </div>
+		  <div class="control-group">
+		    <label class="control-label" for="password">密码</label>
+		    <div class="controls">
+		      <input type="password" name="password" placeholder="密码">
+		    </div>
+		  </div>
+		  
+
+		  <div class="control-group">
+			<div class="controls">
+				<a class="btn btn-primary" id="btn_update">更新配置</a>
+				<span class="alert alert-success hide">
+	              <strong>成功!</strong> 配置已更新。
+	            </span>
+
+			</div>
+		  </div>
+		</form>
+	</div>
+
+	<script type="text/javascript" src="lib/form2js/form2js.js"></script>
+	<script type="text/javascript" src="lib/form2js/js2form.js"></script>
+	<script type="text/javascript" src="lib/form2js/jquery.toObject.js"></script>
+	<script type="text/javascript" src="lib/form2js/json2.js"></script>
+	<script type="text/javascript">
+		var db= require('./main/tinydb.js');
+		$(function(){
+			db.find("serverinfo",function(data){
+				js2form($("form").get(0), data);
+			},{});
+
+			$('#btn_update').click(function(){
+				var serverinfo=$("form").toObject();
+				db.save("serverinfo",serverinfo,function(){
+					$('.alert').show();
+					setTimeout(function(){$('.alert').hide()},3000);
+				})
+			})
+		});
+
+	</script>
+    
+	</body>
+</html>
