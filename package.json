@@ -1,0 +1,18 @@
+{
+    "main": "app/mail.html",
+    "single-instance": true,
+    "name": "MAILExcel",
+    "description": "send mail form excel.",
+    "version": "0.1",
+    "keywords": ["excel", "mail"],
+    "window": {
+        "icon": "icon.png",
+        "toolbar": true,
+        "width": 1200,
+        "height": 600,
+        "position": "center"
+    },
+    "webkit": {
+        "plugin": false
+    }
+}
