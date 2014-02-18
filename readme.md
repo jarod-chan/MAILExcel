@@ -15,4 +15,8 @@
 - nodemailer
 - tiny
 
+**下载地址**
+
+[百度云盘](http://pan.baidu.com/share/link?shareid=941886394&uk=2902920269)
+
 
