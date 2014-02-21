@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-  	<meta charset="utf-8">
   	<title>MAILExcel</title>
+  	<meta charset="utf-8">
+  	<meta http-equiv="pragma" content="no-cach" /> 
+	<meta http-equiv="cache-control" content="no-cache" /> 
+	<meta http-equiv="expires" content="0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
     <link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" >
@@ -51,15 +54,15 @@
 	              <strong>成功!</strong> 员工邮件已更新。
 	            </span>
 		  			<a id="btn_add_row" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
-			  		<a id="btn_save"   class="btn btn-small btn-primary" href="#">保存</a>
+			  		<a id="btn_save"   	class="btn btn-small btn-primary" href="#">保存</a>
+			  		<a id="btn_file" 	class="btn btn-small btn-primary" href="#">导入</a>
+			  		<input id="hide_file" type="file"  class="hide" />
 			</div>
 		  	</div>
 		  </div>
 		</form>
 	</div>
-	<span id="info"></span>
-
-
+	
 	<script type="text/javascript" src="lib/handlebars/handlebars-1.0.0.beta.6.js"></script>
 
 	<script id="tr-template" type="text/x-handlebars-template">
@@ -70,79 +73,10 @@
      	<td><a class="btn_remove_row btn btn-small btn-danger" href="#"><i class="icon-minus"></i></a></td>
     </tr>
     </script>
-	
-	<script type="text/javascript">
-	var db= require('./main/tinydb.js');
-	var template = Handlebars.compile($("#tr-template").html());
 
-	$(function(){
-		var remove_row=function(){
-			var tr=$(this).parents("tr:eq(0)");
-			tr.remove();
-			reIndexTable();
-		}
-
-		var copytr=function(data){
-			var tr=$(template(data));
-			tr.find(".btn_remove_row").click(remove_row);
-			return tr;
-		};
-
-		db.find("userinfo",function(userinfo){
-			if(userinfo&&userinfo.data){
-				var tbody=$("#maintab tbody");
-				var data=userinfo.data;
-				for (var i = 0; i < data.length; i++) {
-					tr=copytr(data[i]);
-					tbody.append(tr);
-				};
-			}
-		},{});
-
-		function reIndexTable(){
-			var tbody=$("#maintab tbody"),index=0;
-			tbody.find("tr").each(function(){
-				index++;
-				$(this).find("td").eq(0).html(index);
-			});
-		}
-		 
-		$("#btn_edit").click(function(){
-			$("#btn_edit_span").show();
-			$(this).hide();
-		});
-		$("#btn_add_row").click(function(){
-			var tbody=$("#maintab tbody");
-			var len=tbody.find("tr").size();
-			var data={no:len+1};
-			tbody.append(copytr(data));
-		});
-
-	
-		$("#btn_cancle").click(function(){
-			$("#btn_edit_span").hide();
-			$("#btn_edit").show();
-		});
-		$("#btn_save").click(function(){
-			var tr=$("#maintab tbody tr");
-			var data=[];//用户邮件数组
-			var index=0;
-			tr.each(function(){
-				data[index]={
-					no:index+1,
-					user:$(this).find("input[name=user]").val(),
-					email:$(this).find("input[name=email]").val()
-				}
-				index++;
-			});
-			db.save("userinfo",{'data':data},function(){
-				$('.alert').show();
-				setTimeout(function(){$('.alert').hide()},3000);
-			});
-		});
-		
-	})	
-	</script>
+	<script src="lib/xls/xls.js"></script>
+	<script src="xlstool.js"></script>
+	<script src="userinfo.js"></script>
     
 	</body>
 </html>

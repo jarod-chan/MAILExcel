@@ -16,9 +16,9 @@ exports.save=function(key,data,func){
 
 exports.find=function (key,func,def_data){
 	Tiny(dbfile,function(err,db){
-		logger.error(err);
+		logger.warn(err);
 		db.get(key, function(err, data) {
-		   logger.warn(err);
+		   logger.error(err);
 		   data=data?data:def_data;
 		   func(data);
 		});
