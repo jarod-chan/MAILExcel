@@ -9,13 +9,9 @@
 ### 开发说明 ###
 **工具:** nodejs,node-webkit
 
-**nodejs模块**:
-
-- async
-- nodemailer
-- tiny
-
-**下载地址**
+### 应用限制 ###
+由于系统是基于smtp进行邮件发送的，邮件服务器可能有调用限制，
+会造成发送失败，如果出现多数发送失败的情况，可以过一会重新发送。
 
 [百度云盘](http://pan.baidu.com/share/link?shareid=941886394&uk=2902920269)
 
