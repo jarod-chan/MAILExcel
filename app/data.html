@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head></head>
+	<body>
+		
+		<script type="text/javascript">
+		(function(){
+			var db= require('./main/nedb.js');
+			db.all(function(err,docs){
+				for (var i = 0; i < docs.length; i++) {
+					 document.write( JSON.stringify(docs[i]));
+					 document.write("</br>");
+				};
+			})
+		})()
+		</script>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+<script type="text/javascript">
+var db= require('./main/nedb.js');
+var step= require('step');
+
+var now=new Date();
+var lastdate=[now.getFullYear(),now.getMonth()].join("-");
+step(
+	function () {
+		db.find("lastdate",this,lastdate);
+	},
+	function(err,finddate){
+		if(lastdate!=finddate){
+			db.remove("senddata",this);
+		}else{
+			return 0;
+		}
+	},
+	function(err,numRemoved){
+		console.info(numRemoved);
+		db.save("lastdate",lastdate,this);
+	},
+	function(err,saveDate){
+		window.open("mail.html","_self");
+	}
+);
+
+	
+
+</script>

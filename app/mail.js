@@ -1,7 +1,7 @@
 
 	var async = require('async');
 	var nodemailer = require("nodemailer");
-	var db= require('./main/tinydb.js');
+	var db= require('./main/nedb.js');
 	var template = Handlebars.compile($("#tab-template").html());
 
 	$(function(){
@@ -50,7 +50,7 @@
 					    from: server_mail, 
 					    to: mail_info.email, 
 					    subject: sheet.title, 
-					    generateTextFromHTML : true, 
+					   // generateTextFromHTML : true, 
 					    html: html
 					}
 				}
@@ -85,13 +85,13 @@
 				btn_send.toggleClass('disabled');
 				$("#div_load").show();
 				async.series({
-				    userinfo: function(cb) {
-				    	db.find("userinfo",function(rt){ var err="";cb(err,rt)}) 
+				    userinfo: function(callback) {
+				    	db.find("userinfo",callback) 
 				    },
-				    serverinfo: function(cb) {
-				    	db.find("serverinfo",function(rt){ var err="";cb(err,rt)}) 
+				    serverinfo: function(callback) {
+				    	db.find("serverinfo",callback) 
 				    }
-				}, function(err,vals) {
+				}, function(err,vals) { 
 					if(!vals.userinfo || !vals.serverinfo){
 						btn_send.removeClass('disabled');
 						$("#div_load").hide();
@@ -99,9 +99,9 @@
 						return;
 					}
 
-				    var mail_list=make_mail_list(sheet1,vals.userinfo.data);
+				    var mail_list=make_mail_list(sheet1,vals.userinfo);
 				    var mail_datas=get_mail_data(sheet1,mail_list,vals.serverinfo.email);
-				    var mail_prop=create_server_porp(vals.serverinfo);
+				    var mail_prop=create_server_porp(vals.serverinfo); 
 				    var smtpTransport = nodemailer.createTransport("SMTP",mail_prop);
 				   
 				    var tby=$("#maintab>tbody>tr");
@@ -110,7 +110,7 @@
 				    for (var i = 0; i <mail_datas.length; i++) {
 				   		var item=mail_datas[i];
 				   		var msg_td=tby.eq(item.idx).find("td:last");
-				   		sendOneEmail(item,smtpTransport,msg_td,chk_fun);
+				   		sendOneEmail(item,smtpTransport,msg_td,chk_fun,i);
 				    };
 
 				});
@@ -125,30 +125,69 @@
 				count_num++;
 				if(count_num==len){
 					smtpTransport.close();
-					$("#btn_send").toggleClass('disabled');
-					$("#div_load").hide();
+					db.save("senddata",sheet1,function(){
+						$("#btn_send").toggleClass('disabled');
+						$("#div_load").hide();
+					});
+					
 				}
 			}
 		}
 
-		function sendOneEmail(item,smtpTransport,td,chk_fun){
+		function sendOneEmail(item,smtpTransport,td,chk_fun,index){
+			//校验邮件是否已经发送成功
+			var st=sheet1.state[index];
+			if(st==3){
+				chk_fun();
+				return;
+			}
+
 			if(item.has_email){
-				
+				td.html(msg.on(-1));
 				smtpTransport.sendMail(item.mail_option, function(error, response){
 				    if(error){
-				        td.html(msg.warn("发送失败！"));
+				    	sheet1.state[index]=2;
+				        td.html(msg.on(2));
 				    }else{
-				        td.html(msg.suce("发送成功！"));
+				    	sheet1.state[index]=3;
+				        td.html(msg.on(3));
 				    }
 				    chk_fun();
 				});
 			}else{
-				td.html(msg.impt("无邮件！"));
-				 chk_fun();
+				sheet1.state[index]=1;
+				td.html(msg.on(1));
+				chk_fun();
 			}
 		}
 
 		var msg={
+			on:function(code){
+				var ret="";
+				switch(code){
+					case -1:
+						ret=this.def("发送中···");
+						break;
+					case 0:
+						ret=this.def("等待发送");
+						break;
+					case 1:
+						ret=this.impt("无邮件");
+						break;
+					case 2:
+						ret=this.warn("发送失败");
+						break;
+					case 3:
+						ret=this.suce("发送成功");
+						break;
+				}
+				return ret;
+			},
+			def:function(msg){
+				var span=$('<span>');
+				span.text(msg).addClass('label');
+				return span;
+			},
 			suce:function(msg){
 				var span=$('<span>');
 				span.text(msg).addClass('label label-success');
@@ -171,6 +210,8 @@
 		var sheet1={};//excel的数据
 
 
+
+
 		//渲染数据
 		function rander_table(){
 			$("#title").html(sheet1.title);
@@ -185,12 +226,13 @@
 			tbody.empty();
 			for(var i in sheet1.data){
 				var dt=sheet1.data[i];
+				var st=sheet1.state[i];
 				var tr=$("<tr>");
 				for(var j in dt){
 					var td=$("<td>").text(dt[j]);
 					tr.append(td);
 				}
-				tr.append($("<td>"));
+				tr.append($("<td>").html(msg.on(st)));
 				tbody.append(tr);
 			}
 		}
@@ -203,10 +245,29 @@
 				array.shift();
 				sheet1.data=array;
 
+				var state=new Array(array.length);
+				for (var i = state.length - 1; i >= 0; i--) {
+					state[i]=0;//0-等待发送 1-无邮件 2-失败 3-成功
+				};
+				sheet1.state=state;
+
+
+				db.save("senddata",sheet1,function(){
+					rander_table();
+					$("#btn_send").removeClass('disabled');
+				});
+			}
+		}
+
+
+
+		db.find("senddata",function(err,data){ console.info(data);
+			if(data){
+				sheet1=data;
 				rander_table();
 				$("#btn_send").removeClass('disabled');
 			}
-		}
+		});
 
 		var drop = document.getElementById('drop_div');
 		function handleDrop(e) {

@@ -1,4 +1,4 @@
-var db= require('./main/tinydb.js');
+var db= require('./main/nedb.js');
 var template = Handlebars.compile($("#tr-template").html());
 
 (function(){
@@ -56,9 +56,12 @@ var template = Handlebars.compile($("#tr-template").html());
 	window.tab_op=new table_operation();
 })();
 
-db.find("userinfo",function(userinfo){
-	if(userinfo&&userinfo.data){
-		var data=userinfo.data;
+db.find("userinfo",function(err,data){
+	if(err){
+		console.info(err);
+		return;
+	}
+	if(data){
 		tab_op.add_datas(data);
 	}
 },{});
@@ -70,8 +73,8 @@ $(function(){
 	});
 
 	$("#btn_save").click(function(){
-		var data=tab_op.to_data();
-		db.save("userinfo",{'data':data},function(){
+		var data=tab_op.to_data(); 
+		db.save("userinfo",data,function(){
 			$('.alert').show();
 			setTimeout(function(){$('.alert').hide()},3000);
 		});
