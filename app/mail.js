@@ -50,7 +50,6 @@
 					    from: server_mail, 
 					    to: mail_info.email, 
 					    subject: sheet.title, 
-					   // generateTextFromHTML : true, 
 					    html: html
 					}
 				}
@@ -109,7 +108,7 @@
 
 				    for (var i = 0; i <mail_datas.length; i++) {
 				   		var item=mail_datas[i];
-				   		var msg_td=tby.eq(item.idx).find("td:last");
+				   		var msg_td=tby.eq(item.idx).find("td").eq(-2);
 				   		sendOneEmail(item,smtpTransport,msg_td,chk_fun,i);
 				    };
 
@@ -209,11 +208,76 @@
 
 		var sheet1={};//excel的数据
 
+		//发送单条数据邮件
+		var send_a_email=function(){
+			var index=$(this).data("idx");
+			var row_data=sheet1.data[index];
+			async.series({
+			    userinfo: function(callback) {
+			    	db.find("userinfo",callback) 
+			    },
+			    serverinfo: function(callback) {
+			    	db.find("serverinfo",callback) 
+			    }
+			}, 
+			function(err,vals) { 
+				if(!vals.userinfo || !vals.serverinfo){
+					alert('请先做好系统配置！');
+					return;
+				}
+				var mail_info=function(){
+					var name=row_data[0];
+					var mail=find_email(vals.userinfo,name);
+					if(mail){
+						return {has_email:true,email:mail}
+					}else{
+						return {has_eamil:false}
+					}
+				}();
 
+				var td=$("#maintab>tbody>tr").eq(index).find("td").eq(-2);
+				if(mail_info.has_email){
+					
+					var dt={
+						len:sheet1.col.length,
+						title:sheet1.title,
+						col:sheet1.col,
+						row:row_data
+					}
+					var html=template(dt);
+					mail_option={
+					    from: vals.serverinfo.email, 
+					    to: mail_info.email, 
+					    subject: sheet1.title, 
+					    html: html
+					}
+					var mail_prop=create_server_porp(vals.serverinfo); 
+				    var smtpTransport = nodemailer.createTransport("SMTP",mail_prop);
+					td.html(msg.on(-1));
+					smtpTransport.sendMail(mail_option, function(error, response){
+					    smtpTransport.close();
 
+					    if(error){
+					    	sheet1.state[index]=2;
+					        td.html(msg.on(2));
+					    }else{
+					    	sheet1.state[index]=3;
+					        td.html(msg.on(3));
+					    }
+					    db.save("senddata",sheet1,function(){});
+					});
+				}else{
+					sheet1.state[index]=1;
+					td.html(msg.on(1));
+					db.save("senddata",sheet1,function(){});
+				}	
+				
+			});
+		}
 
 		//渲染数据
 		function rander_table(){
+
 			$("#title").html(sheet1.title);
 			var tr=$("<tr>");
 			for(var i in sheet1.col){
@@ -221,6 +285,7 @@
 				tr.append(th);
 			}
 			tr.append($("<th>").text("信息").width(100));
+			tr.append($("<th>").text("操作").width(100));
 			$("#maintab>thead").html(tr);
 			var tbody=$("#maintab>tbody");
 			tbody.empty();
@@ -233,6 +298,9 @@
 					tr.append(td);
 				}
 				tr.append($("<td>").html(msg.on(st)));
+				var btn_send_one=$('<button data-idx="'+i+'" class="btn btn-small btn-primary">发送</button>');
+				btn_send_one.click(send_a_email);
+				tr.append($("<td>").append(btn_send_one));				
 				tbody.append(tr);
 			}
 		}
