@@ -67,7 +67,7 @@
 		function create_server_porp(sv){
 			return {
 			    host: sv.host,
-			    secureConnection: true, // use SSL
+			    //secureConnection: true, // use SSL
 			    port: parseInt(sv.port), // port for secure SMTP
 			    auth: {
 			        user: sv.email,
@@ -251,11 +251,13 @@
 					    subject: sheet1.title, 
 					    html: html
 					}
-					var mail_prop=create_server_porp(vals.serverinfo); 
+					console.log(vals.serverinfo);
+					var mail_prop=create_server_porp(vals.serverinfo); console.log(mail_prop);
 				    var smtpTransport = nodemailer.createTransport("SMTP",mail_prop);
 					td.html(msg.on(-1));
 					smtpTransport.sendMail(mail_option, function(error, response){
 					    smtpTransport.close();
+						console.log(error);
 
 					    if(error){
 					    	sheet1.state[index]=2;
