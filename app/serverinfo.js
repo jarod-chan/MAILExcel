@@ -1,7 +1,7 @@
 	
 var db= require('./main/nedb.js');
 $(function(){
-	db.find("serverinfo",function(err,data){
+	db.find("serverinfo",function(err,data){ console.log(data);
 		js2form($("form").get(0), data);
 	},{});
 

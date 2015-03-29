@@ -3,34 +3,11 @@
   <head>
   	<title>MAILExcel</title>
   	<meta charset="utf-8">
-  	<meta http-equiv="pragma" content="no-cach" /> 
-	<meta http-equiv="cache-control" content="no-cache" /> 
-	<meta http-equiv="expires" content="0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" >
     <link rel="stylesheet" href="common/app.css" >
     <script src="jquery/jquery-2.0.3.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <style type="text/css">
-		.drop_div{
-			border:2px dashed #bbb;
-			-moz-border-radius:5px;
-			-webkit-border-radius:5px;
-			border-radius:5px;
-			padding:25px;
-			text-align:center;
-			font:20pt bold;
-			color:#bbb
-		}
-		.navbar{
-			margin-bottom: 5px;
-		}
-		.send_div{
-			padding-left: 5px;
-			padding-right: 5px;
-		}
-  </style>
   </head>
   <body>
   	
@@ -52,22 +29,47 @@
 	    </div>
 	</div>
 	
+	<div id="prop_warn" class="alert alert-block hide">
+	  <button type="button" class="close" data-dismiss="alert">&times;</button>
+	  <h4>注意!</h4>
+	  系统配置未完成，请先配置服务器以及员工邮件！
+	</div>
+	<style type="text/css">
+	#prop_warn{
+		margin-bottom: 10px;
+	}
+	</style>
 
 	<div class="drop_div" id="drop_div" >拖放一个excel(.xls)文件到这里.</div>
+	<style type="text/css">
+		.drop_div{
+			border:2px dashed #B0B0B0;
+			padding:25px;
+			text-align:center;
+			font:20pt bold;
+			color:#B0B0B0;
+		}
+
+		.on_drop_div{
+			background-color: #ddd;
+		}			
+  	</style>
+
+
+
+
 	
 
 	<div class="send_div">
 		   
 		  <div class="control-group">
 	  	  	<div class="pull-right">
-		  		<button  id="btn_send"   class="btn btn-small btn-primary disabled">发送邮件</button>
+		  		<button  id="btn_send"   class="btn btn-small btn-primary ">发送邮件</button>
 			</div>
 			<h3 id="title"></h3>
-		    <table id="maintab" class="table  table-bordered" >
-              <thead>
-              </thead>
-              <tbody>
-              </tbody>
+		    <table id="maintab" class="table  table-bordered table-hover" >
+              <thead></thead>
+              <tbody></tbody>
             </table>
 		  </div>
 	</div>
@@ -108,13 +110,15 @@
 	<style type="text/css">
 	.spinner {
 	  position:absolute;
-	  top:125px;
-	  right:80px;
+	  top:128px;
+	  right:70px;
 	  width: 50px;
 	  height: 60px;
 	  text-align: center;
 	  font-size: 10px;
 	}
+
+
 	 
 	.spinner > div {
 	  background-color: #0088cc;

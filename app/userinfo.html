@@ -8,7 +8,6 @@
 	<meta http-equiv="expires" content="0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" >
     <link rel="stylesheet" href="common/app.css" >
     <script src="jquery/jquery-2.0.3.js"></script>
 	<script src="bootstrap/js/bootstrap.min.js"></script>
@@ -34,35 +33,33 @@
 	</div>
 
 	<div class="container">
-		<h2>员工邮件</h2> 
-		<form class="form-horizontal" >
-		  <div class="control-group">
-		   <table id="maintab" class="table  table-bordered" style="margin-bottom:5px;">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>姓名</th>
-                  <th>邮件</th> 
-                  <th style="width:30px;">删除</th>     
-                </tr>
-              </thead>
-              <tbody>
+	<h2>员工邮件</h2> 
+	<form >
+	<table id="maintab" class="table  table-bordered" style="margin-bottom:5px;">
+	  <thead>
+	    <tr>
+	      <th>#</th>
+	      <th>姓名</th>
+	      <th>邮件</th> 
+	      <th style="width:30px;">删除</th>     
+	    </tr>
+	  </thead>
+	  <tbody>
 
-              </tbody>
-            </table>
-		  	<div class="pull-right">
-		  		<span class="alert alert-success hide">
-	              <strong>成功!</strong> 员工邮件已更新。
-	            </span>
-		  			<a id="btn_add_row" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
-			  		<a id="btn_save"   	class="btn btn-small btn-primary" href="#">保存</a>
-			  		<a id="btn_file" 	class="btn btn-small btn-primary" href="#">导入</a>
-			  		<input id="hide_file" type="file"  class="hide" />
-			</div>
-		  	</div>
-		  </div>
-		</form>
+	  </tbody>
+	</table>
+		<div class="pull-right">
+			<span class="alert alert-success hide">
+	      <strong>成功!</strong> 员工邮件已更新。
+	    </span>
+			<a id="btn_add_row" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
+	  		<a id="btn_save"   	class="btn btn-small btn-primary" href="#">保存</a>
+	  		<a id="btn_file" 	class="btn btn-small btn-primary" href="#">导入</a>
+	  		<input id="hide_file" type="file"  class="hide" />
 	</div>
+	</form>
+	</div>
+
 	
 	<script type="text/javascript" src="lib/handlebars/handlebars-1.0.0.beta.6.js"></script>
 

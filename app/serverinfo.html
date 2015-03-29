@@ -8,7 +8,6 @@
 	<meta http-equiv="expires" content="0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-responsive.css" >
     <link rel="stylesheet" href="common/app.css" >
     <script src="jquery/jquery-2.0.3.js"></script>
 	<script src="bootstrap/js/bootstrap.min.js"></script>
@@ -36,25 +35,33 @@
 	<div class="container">
 		<h2>服务器</h2> 
 		<form class="form-horizontal" >
-		  <div class="control-group">
-		    <label class="control-label" for="host">主机</label>
-		    <div class="controls">
-		      <input type="text" name="host" placeholder="主机"><strong>:</strong>
-		      <input type="text" class="input-mini" name="port" placeholder="端口">
-		    </div>
-		  </div>
-		  <div class="control-group">
-		    <label class="control-label" for="email">邮箱</label>
-		    <div class="controls">
-		      <input type="text" name="email" placeholder="邮箱">
-		    </div>
-		  </div>
-		  <div class="control-group">
-		    <label class="control-label" for="password">密码</label>
-		    <div class="controls">
-		      <input type="password" name="password" placeholder="密码">
-		    </div>
-		  </div>
+		<div class="control-group">
+			<label class="control-label" for="host">SSL</label>
+			<div class="controls">
+				<label class="checkbox">
+				<input type="checkbox" name="ssl">勾选代表使用SSL
+				</label>
+			</div>
+		</div>
+		<div class="control-group">
+		<label class="control-label" for="host">主机</label>
+		<div class="controls">
+		<input type="text" name="host" placeholder="主机"><strong>:</strong>
+		<input type="text" class="input-mini" name="port" placeholder="端口">
+		</div>
+		</div>
+		<div class="control-group">
+		<label class="control-label" for="email">邮箱</label>
+		<div class="controls">
+		<input type="text" name="email" placeholder="邮箱">
+		</div>
+		</div>
+		<div class="control-group">
+		<label class="control-label" for="password">密码</label>
+		<div class="controls">
+		<input type="password" name="password" placeholder="密码">
+		</div>
+		</div>
 		  
 
 		  <div class="control-group">
@@ -63,7 +70,6 @@
 				<span class="alert alert-success hide">
 	              <strong>成功!</strong> 配置已更新。
 	            </span>
-
 			</div>
 		  </div>
 		</form>
