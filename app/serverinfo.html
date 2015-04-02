@@ -34,35 +34,85 @@
 
 	<div class="container">
 		<h2>服务器</h2> 
-		<form class="form-horizontal" >
-		<div class="control-group">
-			<label class="control-label" for="host">SSL</label>
-			<div class="controls">
-				<label class="checkbox">
-				<input type="checkbox" name="ssl">勾选代表使用SSL
-				</label>
+
+		<ul id="mytab" class="nav nav-tabs">
+		  <li ><a href="#smtp" data-toggle="tab">SMTP</a></li>
+		  <li ><a href="#submail" data-toggle="tab">SUBMAIL</a></li>
+		</ul>
+		<form class="form-horizontal" style="margin-bottom:0px;">
+		<input type="hidden" id="mode" name="mode" value="">
+		<div class="tab-content">
+			<div class="tab-pane" id="smtp">
+					<div class="control-group">
+						<label class="control-label" for="host">SSL</label>
+						<div class="controls">
+							<label class="checkbox">
+								<input type="checkbox" name="ssl">勾选代表使用SSL
+							</label>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="host">主机</label>
+						<div class="controls">
+							<input type="text" name="host" placeholder="主机"><strong>:</strong>
+							<input type="text" class="input-mini" name="port" placeholder="端口">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="email">邮箱</label>
+						<div class="controls">
+							<input type="text" name="email" placeholder="邮箱">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="password">密码</label>
+						<div class="controls">
+							<input type="password" name="password" placeholder="密码">
+						</div>
+					</div>
 			</div>
+
+			<div class="tab-pane fade" id="submail">
+					<div class="control-group">
+						<label class="control-label" for="appid">appid</label>
+						<div class="controls">
+							<input type="text" name="appid" placeholder="appid">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="appkey">appkey</label>
+						<div class="controls">
+							<input type="text" name="appkey" placeholder="appkey">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="signtype">签名加密</label>
+						<div class="controls">
+							<select name="signtype">
+							  <option value="normal">不加密</option>
+							  <option value="md5">md5</option>
+							  <option value="sha1">sha1</option>
+							</select>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="from">账号</label>
+						<div class="controls">
+							<input type="text" name="from" placeholder="账号">
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<span class="alert alert-info">
+								<strong>SUBMAIL</strong>是短信及邮件提供商。http://www.submail.cn
+							</span>
+						</div>
+					</div>
+			</div>
+			
 		</div>
-		<div class="control-group">
-		<label class="control-label" for="host">主机</label>
-		<div class="controls">
-		<input type="text" name="host" placeholder="主机"><strong>:</strong>
-		<input type="text" class="input-mini" name="port" placeholder="端口">
-		</div>
-		</div>
-		<div class="control-group">
-		<label class="control-label" for="email">邮箱</label>
-		<div class="controls">
-		<input type="text" name="email" placeholder="邮箱">
-		</div>
-		</div>
-		<div class="control-group">
-		<label class="control-label" for="password">密码</label>
-		<div class="controls">
-		<input type="password" name="password" placeholder="密码">
-		</div>
-		</div>
-		  
+	
+			</form>
 
 		  <div class="control-group">
 			<div class="controls">
@@ -72,7 +122,7 @@
 	            </span>
 			</div>
 		  </div>
-		</form>
+	
 	</div>
 
 	<script type="text/javascript" src="lib/form2js/form2js.js"></script>

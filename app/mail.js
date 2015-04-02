@@ -1,40 +1,27 @@
 
 	var async = require('async');
-	var nodemailer = require("nodemailer");
 	var db= require('./main/nedb.js');
 	var template = Handlebars.compile($("#tab-template").html());
+
+	var sender_creater=require("./main/sendercreater.js");
 	
 	var mxl_sheet={};//excel的数据
 	var mxl_prop={}; //配置属性
 
 	//邮件发送器
 	var mxl_sender=(function(){
-		function create_server_porp(sv){
-			var ret={
-			    host: sv.host,
-			    //secureConnection: true, // use SSL
-			    port: parseInt(sv.port), // port for secure SMTP
-			    auth: {
-			        user: sv.email,
-			        pass: sv.password
-			    }
-			};
-			if(sv.ssl){ret.secureConnection=true};
-			return ret;
-		}
-		mail_prop={};
-		smtpTransport={};
+		var sender={};
 		var ret={has_init:false};
-		ret.init=function(){
-			mail_prop=create_server_porp(mxl_prop.serverinfo); 
-			smtpTransport = nodemailer.createTransport("SMTP",mail_prop);	   
+		ret.init=function(serverinfo){   
+			sender=sender_creater.create(serverinfo);
+			console.log(sender);
 			this.has_init=true;
 		}
 		ret.check=function(){
 			return this.has_init;
 		}
 		ret.send=function(mail_option,callback){
-			smtpTransport.sendMail(mail_option, callback);
+			sender.send(mail_option, callback);
 		}
 		return ret;
 	})();
@@ -69,7 +56,7 @@
 				}
 				var html=template(dt);
 				mail_option={
-				    from: mxl_prop.serverinfo.email, 
+				    from: mxl_prop.frommail, 
 				    to: mail_info.email, 
 				    subject: mxl_sheet.title, 
 				    html: html
@@ -104,8 +91,15 @@
 				$("#prop_warn").show();
 				return;
 			}
-			mxl_prop=vals;
-			mxl_sender.init();
+			mxl_prop.userinfo=vals.userinfo;
+			mxl_prop.frommail=(function(serverinfo){
+				if(serverinfo.mode=='smtp'){
+					return serverinfo.email;
+				}else{
+					return serverinfo.from;
+				}
+			}(vals.serverinfo));
+			mxl_sender.init(vals.serverinfo);
 		});
 	})
 
@@ -186,6 +180,11 @@
 		}
 
 		function send_one_row(){
+			var sender_init=mxl_sender.check();
+			if(!sender_init){
+				alert('请先做好系统配置！');
+				return;
+			}
 			var index=$(this).data("idx");
 			send_by_index(index);
 		}
