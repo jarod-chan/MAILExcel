@@ -10,7 +10,7 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
   </head>
   <body>
-  	
+	
   	<div class="navbar navbar-fixed-top">
 	    <div class="navbar-inner">
 	        <div class="container">
@@ -57,21 +57,135 @@
 
 
 
+	<div id="send_div" class="hide">
+			<div  class="send_toolbar">
+			  <div class="text-left" ><span id="title"></sapn></div>
+			  <div class="text-right" >
+			  	<div id='div_load' class="spinner noshow">
+			  		<div class="rect1"></div>
+			  		<div class="rect2"></div>
+			  		<div class="rect3"></div>
+			  		<div class="rect4"></div>
+			  		<div class="rect5"></div>
+			  	</div>
 
-	
-
-	<div class="send_div">
-		   
-		  <div class="control-group">
-	  	  	<div class="pull-right">
-		  		<button  id="btn_send"   class="btn btn-small btn-primary ">发送邮件</button>
+			  	<div id="mode_one" class="btn-group">
+			  		<a  id="btn_send"   class="btn btn-primary "><i class=" icon-envelope icon-white"></i>发送邮件</a>
+			  		<a 	id="btn_clear"class="btn btn-danger" type="button"><i class="icon-trash icon-white"></i>清除</a>
+			  		<a 	id="btn_to_mode_two"class="btn  btn-success" type="button"><i class="icon-chevron-right icon-white"></i></a>
+			  	</div> 
+			  	<div id="mode_two" class="input-prepend  input-append hide">
+			  		<span class="add-on">编号</span>
+			  		<input class="span2" id="input_search_no" data-provide="typeahead" type="text">
+			  		<button id="btn_search_no"class="btn  btn-primary" type="button"><i class="icon-search icon-white"></i>搜索</button>
+			  		<button id="btn_to_mode_one" class="btn btn-success" type="button"><i class="icon-chevron-left icon-white"></i></button>
+			  	</div>
+			  </div>
 			</div>
-			<h3 id="title"></h3>
 		    <table id="maintab" class="table  table-bordered table-hover" >
-              <thead></thead>
-              <tbody></tbody>
+	
+              	<thead></thead>
+              	<tbody></tbody>
             </table>
-		  </div>
+	</div>
+	<style type="text/css">
+		#send_div{
+			margin-top:10px;
+		}
+		.send_toolbar{
+			width: 100%;
+		}
+		.send_toolbar>div{
+			width: 50%;
+			float: left;
+			height: 30px;
+		}
+		#title{
+			padding: 0px 5px 0px 5px;
+			white-space: nowrap;
+			background-color: #f7f7f9;
+			border: 1px solid #e1e1e8;
+			font-weight:bold;
+			display: inline-block;
+			line-height: 28px;
+		}
+
+		#mode_two ul.typeahead li{
+			text-align: left;
+		}
+
+		/*loading 样式----------------------------------------------*/
+		.spinner {
+			width: 50px;
+			text-align: center;
+			font-size: 10px;
+			height: 30px;
+			display: inline-block;
+			vertical-align: bottom;;
+		}
+
+		.noshow{
+			display: none;
+		}
+
+
+
+		.spinner > div {
+			background-color: #0088cc;
+			height: 100%;
+			width: 6px;
+			display: inline-block;
+
+			-webkit-animation: stretchdelay 1.2s infinite linear;
+			animation: stretchdelay 1.2s infinite linear;
+		}
+
+		.spinner .rect2 {
+			-webkit-animation-delay: -1.1s;
+		}
+
+		.spinner .rect3 {
+			-webkit-animation-delay: -1.0s;
+		}
+
+		.spinner .rect4 {
+			-webkit-animation-delay: -0.9s;
+		}
+
+		.spinner .rect5 {
+			-webkit-animation-delay: -0.8s;
+		}
+
+		@-webkit-keyframes stretchdelay {
+			0%, 40%, 100% { -webkit-transform: scaleY(1.0) } 
+			20% { -webkit-transform: scaleY(0.0) }
+		}
+
+		@keyframes stretchdelay {
+			0%, 40%, 100% { 
+				transform: scaleY(1.0);
+				-webkit-transform: scaleY(0.0);
+			}  20% { 
+				transform: scaleY(1.0);
+				-webkit-transform: scaleY(0.0);
+			}
+		}
+
+
+	</style>
+
+	<div id="msgmod" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="myModalLabel">系统信息</h3>
+		</div>
+		<div class="modal-body">
+			<p>你确定要清除当前页面的所有数据吗？</p>
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+			<button class="btn_yes btn btn-primary">确定</button>
+		</div>
 	</div>
 
 
@@ -100,67 +214,6 @@
 	<script src="xlstool.js"></script>
 	<script src="mail.js"></script>
 
-	<div id='div_load' class="spinner hide">
-	  <div class="rect1"></div>
-	  <div class="rect2"></div>
-	  <div class="rect3"></div>
-	  <div class="rect4"></div>
-	  <div class="rect5"></div>
-	</div>
-	<style type="text/css">
-	.spinner {
-	  position:absolute;
-	  top:128px;
-	  right:70px;
-	  width: 50px;
-	  height: 60px;
-	  text-align: center;
-	  font-size: 10px;
-	}
-
-
-	 
-	.spinner > div {
-	  background-color: #0088cc;
-	  height: 100%;
-	  width: 6px;
-	  display: inline-block;
-	   
-	  -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
-	  animation: stretchdelay 1.2s infinite ease-in-out;
-	}
-	 
-	.spinner .rect2 {
-	  -webkit-animation-delay: -1.1s;
-	}
-	 
-	.spinner .rect3 {
-	  -webkit-animation-delay: -1.0s;
-	}
-	 
-	.spinner .rect4 {
-	  -webkit-animation-delay: -0.9s;
-	}
-	 
-	.spinner .rect5 {
-	  -webkit-animation-delay: -0.8s;
-	}
-	 
-	@-webkit-keyframes stretchdelay {
-	  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
-	  20% { -webkit-transform: scaleY(1.0) }
-	}
-	 
-	@keyframes stretchdelay {
-	  0%, 40%, 100% { 
-	    transform: scaleY(0.4);
-	    -webkit-transform: scaleY(0.4);
-	  }  20% { 
-	    transform: scaleY(1.0);
-	    -webkit-transform: scaleY(1.0);
-	  }
-	}
-	</style>
     
   </body>
 </html>

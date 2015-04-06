@@ -38,7 +38,8 @@
 		}
 		function wrapper(row_data){
 			ret={success:false};
-			var name=row_data[0];
+			var no=row_data[0];
+			var name=row_data[1];
 			var mail_info=function(){
 				var mail=find_email(mxl_prop.userinfo,name);
 				if(mail){
@@ -51,14 +52,14 @@
 				var dt={
 					len:mxl_sheet.col.length,
 					title:mxl_sheet.title,
-					col:mxl_sheet.col,
-					row:row_data
+					col:mxl_sheet.col.slice(1),
+					row:row_data.slice(1)
 				}
 				var html=template(dt);
 				mail_option={
 				    from: mxl_prop.frommail, 
 				    to: mail_info.email, 
-				    subject: mxl_sheet.title, 
+				    subject: mxl_sheet.title+"["+name+"|"+no+"]", 
 				    html: html
 				}
 				
@@ -113,11 +114,21 @@
 			db.save(key,mxl_sheet,callback);
 		}
 		function find(callback){
+			if(!callback){
+				callback=function(){};
+			}
 			db.find("senddata",callback);
+		}
+		function remove(callback){
+			if(!callback){
+				callback=function(){};
+			}
+			db.remove("senddata",callback);
 		}
 		return{
 			save:save,
-			find:find
+			find:find,
+			remove:remove
 		}
 	})()
 
@@ -197,12 +208,12 @@
 				return;
 			}
 
-			if(btn_send.hasClass('disabled')) return;
+			if(div_load.loading()) return;
 			if(mxl_sheet.data.length==0) return;
 			
 			(function(){
-				btn_send.addClass('disabled');
-				$("#div_load").show();
+				$("#mode_one .btn").addClass('disabled');
+				div_load.show();
 				var i=0,len=mxl_sheet.data.length;
 				var trs=$("#maintab>tbody>tr");
 				function callnext(){
@@ -212,8 +223,8 @@
 						trs.eq(i).addClass("warning");
 						send_by_index(i,callnext);
 					}else{
-						$("#div_load").hide();
-						btn_send.removeClass('disabled');
+						div_load.hide();
+						$("#mode_one .btn").removeClass('disabled');
 					}
 				}
 				trs.eq(i).addClass("warning");
@@ -254,7 +265,28 @@
 		return{
 			rander_table:rander_table
 		}
-	})()
+	}())
+
+	var mode_swith=(function(){
+		var tby=$("#maintab>tbody");
+		function one(){
+			db.save("page_mode","one",function(){
+				var trs=tby.find("tr");
+				trs.show();
+				$("#mode_one").show();
+				$("#mode_two").hide();
+			})
+		}
+		function two(){
+			db.save("page_mode","two",function(){
+				var trs=tby.find("tr");
+				trs.hide();
+				$("#mode_one").hide();
+				$("#mode_two").show();
+			})
+		}		
+		return{one:one,two:two};
+	}())
 
 	//加载页面初始数据
 	$(function(){
@@ -262,12 +294,100 @@
 			if(data){
 				mxl_sheet=data;
 				pageUtil.rander_table();
+				db.find("page_mode",function(err,data){
+					if(data=="one"){
+						mode_swith.one();
+					}else{
+						mode_swith.two();
+					}
+					$("#send_div").show();
+				},"one");
+				return;				
+			}else{
+				mode_swith.one();
 			}
 		})
 	})
 
 
 
+	//表格工具条按钮
+	$(function(){
+		$('#msgmod .btn_yes').click(function(){
+			dbUtil.remove(function(){
+				$("#send_div").hide();
+				$('#msgmod').modal("hide");
+			});
+		});
+		$('#msgmod').modal({show:false});
+		$("#btn_clear").click(function(){
+			if($(this).is(".disabled")) return;
+			$('#msgmod').modal('show');	
+		});
+
+		
+
+		$("#btn_to_mode_two").click(function(){
+			if($(this).is(".disabled")) return;
+			mode_swith.two();
+		})
+		$("#btn_to_mode_one").click(function(){
+			mode_swith.one();
+		})
+
+		var tby=$("#maintab>tbody");
+		function enter_no(no){
+			no=$.trim(no);
+			var trs=tby.find("tr");
+			trs.hide();
+			for(var i in mxl_sheet.data){
+				var row_no=mxl_sheet.data[i][0];
+				if(row_no==no){
+					trs.eq(i).show();
+				}
+			}
+		}
+		
+		$("#btn_search_no").click(function(){
+			var no=$("#input_search_no").val();
+			enter_no(no);
+			
+		});
+		$("#input_search_no").bind('keyup', function(event){
+			var no=$(this).val();
+	        if (event.keyCode=="13"){
+				enter_no(no);
+	        }
+	    });
+
+		$(document).bind('keyup', function(event){
+	        if (event.ctrlKey&&event.keyCode=="13"){
+	        	$("#input_search_no").val("").focus();
+				tby.find("tr").hide();
+	        }
+	    });
+	})
+
+	var div_load=(function(){
+		var btn=$("#div_load");
+		var isShow=false;
+		function show(){
+			isShow=true;
+			btn.removeClass("noshow");
+		}
+		function hide(){
+			isShow=false;
+			btn.addClass("noshow");
+		}
+		function loading(){
+			return isShow;
+		}
+		return{
+			show:show,
+			hide:hide,
+			loading:loading
+		}
+	}());
 
 	
 
@@ -290,6 +410,8 @@ $(function(){
 				mxl_sheet.state=state;
 				dbUtil.save(function(){
 					pageUtil.rander_table();
+					mode_swith.one();
+					$("#send_div").show();
 				})
 			}
 		}
@@ -329,3 +451,4 @@ $(function(){
 		drop.addEventListener('dragleave', handleDragleave, false);
 		
 })
+
