@@ -342,7 +342,8 @@
 			trs.hide();
 			for(var i in mxl_sheet.data){
 				var row_no=mxl_sheet.data[i][0];
-				if(row_no==no){
+				var row_name=mxl_sheet.data[i][1];
+				if(row_no==no||row_name==no){
 					trs.eq(i).show();
 				}
 			}
