@@ -352,14 +352,41 @@
 		$("#btn_search_no").click(function(){
 			var no=$("#input_search_no").val();
 			enter_no(no);
-			
 		});
-		$("#input_search_no").bind('keyup', function(event){
-			var no=$(this).val();
-	        if (event.keyCode=="13"){
-				enter_no(no);
-	        }
-	    });
+
+
+	    $('#input_search_no').typeahead({
+		    source: function(query, process) { 
+		      	var trs=tby.find("tr");
+				trs.hide();
+		        var results=new Array();
+		        var index=0;
+		        for(var i in mxl_sheet.data){
+		         	results[index]=mxl_sheet.data[i][0];
+		         	index++;
+		         	results[index]=mxl_sheet.data[i][1];
+		         	index++;
+		         }
+		         return results;
+		    },
+	      	highlighter: function (item) {
+	      		var newitem="";
+	      		for(var i in mxl_sheet.data){
+		         	if(mxl_sheet.data[i][0]==item||mxl_sheet.data[i][1]==item){
+		         		newitem=mxl_sheet.data[i][0]+" "+mxl_sheet.data[i][1];
+		         		break;
+		         	}
+		         }
+				var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+			    return newitem.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+			        return '<strong>' + match + '</strong>'
+			    })
+			},
+		  updater: function(item) {
+			enter_no(item);
+			return item;
+		  }
+	   });
 
 		$(document).bind('keyup', function(event){
 	        if (event.ctrlKey&&event.keyCode=="13"){
