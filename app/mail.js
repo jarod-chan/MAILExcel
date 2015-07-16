@@ -14,7 +14,6 @@
 		var ret={has_init:false};
 		ret.init=function(serverinfo){   
 			sender=sender_creater.create(serverinfo);
-			console.log(sender);
 			this.has_init=true;
 		}
 		ret.check=function(){
@@ -36,10 +35,24 @@
 			   }
 			};
 		}
+		function to_send_head(arr){
+			var newarr=[];
+			for(var i=0,len=arr.length-1;i<len;i++){
+				newarr[i]=arr[i].title;
+			}
+			return newarr;
+		}
+		function to_send_data(arr,len){
+			var newarr=[];
+			for(var i=0;i<len;i++){
+				newarr[i]=arr["col"+i];
+			}
+			return newarr;
+		}
 		function wrapper(row_data){
 			ret={success:false};
-			var no=row_data[0];
-			var name=row_data[1];
+			var no=row_data.col0;
+			var name=row_data.col1;
 			var mail_info=function(){
 				var mail=find_email(mxl_prop.userinfo,name);
 				if(mail){
@@ -50,12 +63,12 @@
 			}();
 			if(mail_info.has_email){
 				var dt={
-					len:mxl_sheet.col.length,
+					len:mxl_sheet.col.length-1,
 					title:mxl_sheet.title,
-					col:mxl_sheet.col.slice(1),
-					row:row_data.slice(1)
+					col:to_send_head(mxl_sheet.col),
+					row:to_send_data(row_data,mxl_sheet.col.length-1)
 				}
-				var html=template(dt);
+				var html=template(dt); 
 				mail_option={
 				    from: mxl_prop.frommail, 
 				    to: mail_info.email, 
@@ -89,7 +102,6 @@
 		}, 
 		function(err,vals) { 
 			if(!vals.userinfo || !vals.serverinfo){
-				$("#prop_warn").show();
 				return;
 			}
 			mxl_prop.userinfo=vals.userinfo;
@@ -159,46 +171,41 @@
 			return {on:on}
 		})();
 
-		function send_by_index(index,callnext){
+		function send_by_index(index,callnext){  
 			var row_data=mxl_sheet.data[index];
 			var ret=mxl_wrapper.wrapper(row_data);
-			var td=$("#maintab>tbody>tr").eq(index).find("td").eq(-2);
-			if(ret.success){
+			var tr=$("#maintab>tbody>tr").eq(index);
+			tr.addClass("warning");
+			var td=tr.find("td").eq(-2);
+			if(ret.success){ 
 				td.html(msg.on(-1));
 				function callback(error, response){
 					console.log(error);
 					console.log(response);
 
-				    if(error){
-				    	mxl_sheet.state[index]=2;				      
+				    if(error||response.status=="error"){
+				    	row_data.state=2;				      
 				    }else{
-				    	mxl_sheet.state[index]=3;
+				    	row_data.state=3;
 				    }
 				    dbUtil.save(function(){
-				    	td.html(msg.on(mxl_sheet.state[index]));	
+				    	td.html(msg.on(row_data.state));
+				    	tr.removeClass("warning");
 				   		if(callnext) callnext();
 				    });
 
 				}
 				mxl_sender.send(ret.mail_option,callback);
 			}else{
-				mxl_sheet.state[index]=1;
+				row_data.state=1;
 				dbUtil.save(function(){
-					td.html(msg.on(1));
+					td.html(msg.on(row_data.state));
+					tr.removeClass("warning");
 					if(callnext) callnext();
 				});
 			}
 		}
 
-		function send_one_row(){
-			var sender_init=mxl_sender.check();
-			if(!sender_init){
-				alert('请先做好系统配置！');
-				return;
-			}
-			var index=$(this).data("idx");
-			send_by_index(index);
-		}
 
 		$("#btn_send").click(function(){
 			var btn_send=$(this);
@@ -211,55 +218,76 @@
 			if(div_load.loading()) return;
 			if(mxl_sheet.data.length==0) return;
 			
+			var send_span=$("#show_send_num");
 			(function(){
 				$("#mode_one .btn").addClass('disabled');
 				div_load.show();
 				var i=0,len=mxl_sheet.data.length;
 				var trs=$("#maintab>tbody>tr");
 				function callnext(){
-					trs.eq(i).removeClass("warning");
 					if(i<len-1){
 						i++;
-						trs.eq(i).addClass("warning");
+						send_span.html((i+1)+'/'+len);
 						send_by_index(i,callnext);
 					}else{
+						send_span.html('');
 						div_load.hide();
 						$("#mode_one .btn").removeClass('disabled');
 					}
 				}
-				trs.eq(i).addClass("warning");
+				send_span.html((i+1)+'/'+len);
 				send_by_index(0,callnext);
+
 			})();
 		});
+
+		var append_header=function(headarr){
+			var arr=[];
+			for(var i in headarr){
+				arr[i]=$.extend({}, headarr[i]);  
+			}	
+			var len=arr.length;
+			arr[len-1].formatter=function (value){
+				return msg.on(value).prop('outerHTML');
+			};
+			arr[len-1].align='center';
+			arr[len-1].width='100px';
+			arr[len]={
+				field:'action',
+				title:'操作',
+				width:'100px',
+				align:'center'
+				
+			}
+			arr[len].formatter=function(){
+				return '<button class="btn_send_one btn btn-small btn-primary">发送</button>';
+			};
+			arr[len].events={
+			    'click .btn_send_one': function (e, value, row, index) {
+			        var sender_init=mxl_sender.check();
+					if(!sender_init){
+						alert('请先做好系统配置！');
+						return;
+					}
+					send_by_index(index);
+			    }
+			};
+
+			return arr;
+		}
 
 		
 		//渲染数据
 		function rander_table(){
-			$("#title").html(mxl_sheet.title);
-			var tr=$("<tr>");
-			for(var i in mxl_sheet.col){
-				var th=$("<th>").text(mxl_sheet.col[i]);
-				tr.append(th);
-			}
-			tr.append($("<th>").text("信息").width(100));
-			tr.append($("<th>").text("操作").width(100));
-			$("#maintab>thead").html(tr);
-			var tbody=$("#maintab>tbody");
-			tbody.empty();
-			for(var i in mxl_sheet.data){
-				var dt=mxl_sheet.data[i];
-				var st=mxl_sheet.state[i];
-				var tr=$("<tr>");
-				for(var j in dt){
-					var td=$("<td>").text(dt[j]);
-					tr.append(td);
-				}
-				tr.append($("<td>").html(msg.on(st)));
-				var btn_send_one=$('<button data-idx="'+i+'" class="btn btn-small btn-primary">发送</button>');
-				btn_send_one.click(send_one_row);
-				tr.append($("<td>").append(btn_send_one));				
-				tbody.append(tr);
-			}
+				$("#title").html(mxl_sheet.title);
+				$table
+				.bootstrapTable('destroy')
+				.bootstrapTable({
+	        		height: getHeight(),
+	        	 	columns: append_header(mxl_sheet.col),
+	        	 	data: mxl_sheet.data
+	        	})
+	        	.bootstrapTable('resetView');
 		}
 
 		return{
@@ -268,19 +296,18 @@
 	}())
 
 	var mode_swith=(function(){
-		var tby=$("#maintab>tbody");
+		
 		function one(){
 			db.save("page_mode","one",function(){
-				var trs=tby.find("tr");
-				trs.show();
+				$("#maintab>tbody>tr").show();
+				$table.bootstrapTable('resetView');
 				$("#mode_one").show();
 				$("#mode_two").hide();
 			})
 		}
 		function two(){
 			db.save("page_mode","two",function(){
-				var trs=tby.find("tr");
-				trs.hide();
+				$("#maintab>tbody>tr").hide();
 				$("#mode_one").hide();
 				$("#mode_two").show();
 			})
@@ -293,6 +320,8 @@
 		dbUtil.find(function(err,data){ 
 			if(data){
 				mxl_sheet=data;
+				$("#drop_div").hide();
+				$("#send_div").show();
 				pageUtil.rander_table();
 				db.find("page_mode",function(err,data){
 					if(data=="one"){
@@ -304,6 +333,7 @@
 				},"one");
 				return;				
 			}else{
+				$("#drop_div").show();
 				mode_swith.one();
 			}
 		})
@@ -317,6 +347,7 @@
 			dbUtil.remove(function(){
 				$("#send_div").hide();
 				$('#msgmod').modal("hide");
+				$('#drop_div').show();
 			});
 		});
 		$('#msgmod').modal({show:false});
@@ -335,16 +366,16 @@
 			mode_swith.one();
 		})
 
-		var tby=$("#maintab>tbody");
+	
 		function enter_no(no){
 			no=$.trim(no);
-			var trs=tby.find("tr");
-			trs.hide();
+			$("#maintab>tbody>tr").hide();
 			for(var i in mxl_sheet.data){
-				var row_no=mxl_sheet.data[i][0];
-				var row_name=mxl_sheet.data[i][1];
+				var row_no=mxl_sheet.data[i]['col0'];
+				var row_name=mxl_sheet.data[i]['col1'];
 				if(row_no==no||row_name==no){
-					trs.eq(i).show();
+					$table.bootstrapTable('showRow',{index: i})
+					.bootstrapTable('resetView');
 				}
 			}
 		}
@@ -357,14 +388,13 @@
 
 	    $('#input_search_no').typeahead({
 		    source: function(query, process) { 
-		      	var trs=tby.find("tr");
-				trs.hide();
+		      	$("#maintab>tbody>tr").hide();
 		        var results=new Array();
 		        var index=0;
 		        for(var i in mxl_sheet.data){
-		         	results[index]=mxl_sheet.data[i][0];
+		         	results[index]=mxl_sheet.data[i]['col0'];
 		         	index++;
-		         	results[index]=mxl_sheet.data[i][1];
+		         	results[index]=mxl_sheet.data[i]['col1'];
 		         	index++;
 		         }
 		         return results;
@@ -372,8 +402,8 @@
 	      	highlighter: function (item) {
 	      		var newitem="";
 	      		for(var i in mxl_sheet.data){
-		         	if(mxl_sheet.data[i][0]==item||mxl_sheet.data[i][1]==item){
-		         		newitem=mxl_sheet.data[i][0]+" "+mxl_sheet.data[i][1];
+		         	if(mxl_sheet.data[i]['col0']==item||mxl_sheet.data[i]['col1']==item){
+		         		newitem=mxl_sheet.data[i]['col0']+" "+mxl_sheet.data[i]['col1'];
 		         		break;
 		         	}
 		         }
@@ -391,7 +421,7 @@
 		$(document).bind('keyup', function(event){
 	        if (event.ctrlKey&&event.keyCode=="13"){
 	        	$("#input_search_no").val("").focus();
-				tby.find("tr").hide();
+				$("#maintab>tbody>tr").hide();
 	        }
 	    });
 	})
@@ -417,11 +447,51 @@
 		}
 	}());
 
-	
+
+function getHeight() {
+    return $(window).height() - 130;
+};
+var $table = $('#maintab');
+$table.bootstrapTable({
+	height: getHeight()
+});
+$(window).resize(function () {
+	$table.bootstrapTable('resetView', {
+	    height: getHeight()
+	});
+});
+
+
+
+
+
+
+
+
 
 $(function(){
 		var drop = document.getElementById('drop_div');
 
+
+		var fmt_header=function(arr,col_num){
+			var heardarr=[];
+			for(var i=0;i<col_num;i++){
+				heardarr[i]={};
+				heardarr[i].field="col"+i;
+				heardarr[i].title=arr[i];
+			}
+			heardarr[col_num]={field:'state',title:'信息'};
+			return heardarr;
+		}
+
+		var fmt_row=function(arr,col_num){
+			var rowarr={};
+			for (var i=0;i<col_num;i++){
+				rowarr["col"+i]=arr[i];
+			}
+			rowarr["state"]=0;
+			return rowarr;
+		}
 		
 		var deal_excel_array=function(array){
 			if(array){
@@ -431,15 +501,20 @@ $(function(){
 				array.shift();
 				mxl_sheet.data=array;
 
-				var state=new Array(array.length);
-				for (var i = state.length - 1; i >= 0; i--) {
-					state[i]=0;//0-等待发送 1-无邮件 2-失败 3-成功
-				};
-				mxl_sheet.state=state;
+				var col_num=mxl_sheet.col.length;
+				mxl_sheet.col=fmt_header(mxl_sheet.col,col_num);
+
+				var len=mxl_sheet.data.length;
+				for (var i=0;i<len;i++){
+					mxl_sheet.data[i]=fmt_row(mxl_sheet.data[i],col_num);
+				}
+
 				dbUtil.save(function(){
-					pageUtil.rander_table();
-					mode_swith.one();
+					$(drop).hide();
 					$("#send_div").show();
+					pageUtil.rander_table();
+			        mode_swith.one();
+									       
 				})
 			}
 		}
@@ -479,4 +554,6 @@ $(function(){
 		drop.addEventListener('dragleave', handleDragleave, false);
 		
 })
+
+
 

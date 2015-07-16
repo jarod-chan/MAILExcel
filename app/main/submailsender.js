@@ -22,6 +22,7 @@ var submailSender=(function () {
             requestParams['sign_type'] = self.signtype;
             requestParams['signature'] = self.createSignature(requestParams);
             request.post({url: api, formData: requestParams}, function optionalCallback(err, httpResponse, body) {
+                body=JSON.parse(body);
                 callback(err,body,httpResponse);
             });
         });

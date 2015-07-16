@@ -4,7 +4,6 @@ var smtp_sender_create=(function(){
 	function create_server_porp(sv){
 		var ret={
 		    host: sv.host,
-		    //secureConnection: true, // use SSL
 		    port: parseInt(sv.port), // port for secure SMTP
 		    auth: {
 		        user: sv.email,
@@ -17,7 +16,7 @@ var smtp_sender_create=(function(){
 
 	smtpTransport={};
 	function init(sv){
-		mail_prop=create_server_porp(sv); 
+		mail_prop=create_server_porp(sv); console.log(mail_prop);
 		smtpTransport = nodemailer.createTransport("SMTP",mail_prop);	   
 	}
 	function send(mail_option,callback){
