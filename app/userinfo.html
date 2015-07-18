@@ -7,41 +7,56 @@
 	<meta http-equiv="cache-control" content="no-cache" /> 
 	<meta http-equiv="expires" content="0" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
-    <link rel="stylesheet" href="common/app.css" >
+    
+    
     <script src="jquery/jquery-2.0.3.js"></script>
-	<script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css" >
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="common/app.css" >
+
   </head>
   <body>
-  	
-  	<div class="navbar navbar-fixed-top">
-	    <div class="navbar-inner">
-	        <div class="container">
-	            <ul class="nav">
-	                <a class="brand" href="#">MAILExcel</a>
-	                <li ><a href="mail.html">发送邮件</a></li>
-	                <li class="dropdown active" id="accountmenu">
-	                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">配置<b class="caret"></b></a>
-	                    <ul class="dropdown-menu">
-	                        <li><a href="serverinfo.html">服务器</a></li>
-	                        <li><a href="userinfo.html">员工邮件</a></li>
-	                    </ul>
-	                </li> 
-	            </ul>
-	        </div>
-	    </div>
-	</div>
+
+  <div class="navbar navbar-default navbar-static-top navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">MAILExcel</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+        		<li><a href="mail.html">发送邮件</a></li>
+	            <li class="dropdown">
+	              <a href="#" class="dropdown-toggle" data-toggle="dropdown">配置<span class="caret"></span></a>
+	              <ul class="dropdown-menu" role="menu">
+	                  	<li><a href="serverinfo.html">服务器</a></li>
+	                  	<li><a href="userinfo.html">员工邮件</a></li>
+	              </ul>
+	            </li>
+		 </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
 
 	<div class="container">
 	<h2>员工邮件</h2> 
 	<form >
-	<table id="maintab" class="table  table-bordered" style="margin-bottom:5px;">
+	<table id="maintab" class="table table-bordered" style="margin-bottom:5px;">
 	  <thead>
 	    <tr>
 	      <th>#</th>
 	      <th>姓名</th>
 	      <th>邮件</th> 
-	      <th style="width:30px;">删除</th>     
+	      <th style="width:60px;">删除</th>     
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -49,12 +64,12 @@
 	  </tbody>
 	</table>
 		<div class="pull-right">
-			<span class="alert alert-success hide">
-	      <strong>成功!</strong> 员工邮件已更新。
-	    </span>
-			<a id="btn_add_row" class="btn btn-small" href="#"><i class="icon-plus"></i></a>
-	  		<a id="btn_save"   	class="btn btn-small btn-primary" href="#">保存</a>
-	  		<a id="btn_file" 	class="btn btn-small btn-primary" href="#">导入</a>
+			<span class="alert alert-success line_alert hide" role="alert">
+		      <strong>成功!</strong> 员工邮件已更新。
+		    </span>
+			<a id="btn_add_row" class="btn btn-sm btn-default" href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></a>
+	  		<a id="btn_save"   	class="btn btn-sm btn-primary" href="#">保存</a>
+	  		<a id="btn_file" 	class="btn btn-sm btn-primary" href="#">导入</a>
 	  		<input id="hide_file" type="file"  class="hide" />
 	</div>
 	</form>
@@ -65,10 +80,10 @@
 
 	<script id="tr-template" type="text/x-handlebars-template">
     <tr>
-     	<td>{{no}}</td>
-     	<td><input class="input-small" name="user" type="text"  value="{{user}}"></td>
-     	<td><input class="input-large" name="email" type="text" value="{{email}}"></td>
-     	<td><a class="btn_remove_row btn btn-small btn-danger" href="#"><i class="icon-minus"></i></a></td>
+     	<td scope="row">{{no}}</td>
+     	<td><input class="form-control" name="user" type="text"  value="{{user}}"></td>
+     	<td><input class="form-control" name="email" type="text" value="{{email}}"></td>
+     	<td><a class="btn_remove_row btn btn-sm  btn-danger" href="#"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></i></a></td>
     </tr>
     </script>
 

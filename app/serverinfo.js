@@ -1,8 +1,8 @@
 	
 var db= require('./main/nedb.js');
 $(function(){
-	$('a[data-toggle="tab"]').on('shown', function (e) {
-	  	var target_herf=$(e.target).attr("href"); 
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+	  	var target_herf=$(e.target).attr("href"); console.log(target_herf);
 		$("#mode").val(target_herf.substring(1));
 	})
 
@@ -18,9 +18,9 @@ $(function(){
 
 	$('#btn_update').click(function(){
 		var serverinfo=$("form").toObject();
-		db.save("serverinfo",serverinfo,function(){
-			$('.alert').show();
-			setTimeout(function(){$('.alert-success').hide()},3000);
+		db.save("serverinfo",serverinfo,function(){ console.log(serverinfo);
+			$('#successinfo').removeClass("hide").show();
+			setTimeout(function(){$('#successinfo').hide()},3000);
 		})
 	})
 });

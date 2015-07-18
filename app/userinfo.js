@@ -74,8 +74,8 @@ $(function(){
 
 	$("#btn_save").click(function(){
 		var data=tab_op.to_data(); 
-		db.save("userinfo",data,function(){
-			$('.alert').show();
+		db.save("userinfo",data,function(){  
+			$('.alert').removeClass('hide').show();
 			setTimeout(function(){$('.alert').hide()},3000);
 		});
 	});

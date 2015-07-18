@@ -156,11 +156,11 @@
 			function on(code){
 				switch(code){
 					case -1:
-						return code_span("发送中··");
+						return code_span("发送中··","label-default");
 					case 0:
-						return code_span("等待发送");
+						return code_span("等待发送","label-default");
 					case 1:
-						return code_span("无邮件",'label-important');
+						return code_span("无邮件",'label-danger');
 					case 2:
 						return code_span("发送失败",'label-warning');
 					case 3:
@@ -260,7 +260,7 @@
 				
 			}
 			arr[len].formatter=function(){
-				return '<button class="btn_send_one btn btn-small btn-primary">发送</button>';
+				return '<button class="btn_send_one btn btn-sm btn-primary">发送</button>';
 			};
 			arr[len].events={
 			    'click .btn_send_one': function (e, value, row, index) {
@@ -386,7 +386,7 @@
 		});
 
 
-	    $('#input_search_no').typeahead({
+	   $('#input_search_no').typeahead({
 		    source: function(query, process) { 
 		      	$("#maintab>tbody>tr").hide();
 		        var results=new Array();
@@ -397,7 +397,7 @@
 		         	results[index]=mxl_sheet.data[i]['col1'];
 		         	index++;
 		         }
-		         return results;
+		         process(results);
 		    },
 	      	highlighter: function (item) {
 	      		var newitem="";
@@ -431,11 +431,11 @@
 		var isShow=false;
 		function show(){
 			isShow=true;
-			btn.removeClass("noshow");
+			btn.show();
 		}
 		function hide(){
 			isShow=false;
-			btn.addClass("noshow");
+			btn.hide();
 		}
 		function loading(){
 			return isShow;
@@ -449,7 +449,7 @@
 
 
 function getHeight() {
-    return $(window).height() - 130;
+    return $(window).height() - 100;
 };
 var $table = $('#maintab');
 $table.bootstrapTable({
@@ -557,3 +557,33 @@ $(function(){
 
 
 
+var localArrayData = ['beijing', 'shanghai', 'guangzhou', 'sz', 'hangzhou', 'ningbo'];
+function parseLocalArrayData() {
+            $("#input_search_no1").typeahead({
+                source: function(query, process) { 
+		      	$("#maintab>tbody>tr").hide();
+		        var results=new Array();
+		        var index=0;
+		        for(var i in mxl_sheet.data){
+		         	results[index]=mxl_sheet.data[i]['col0'];
+		         	index++;
+		         	results[index]=mxl_sheet.data[i]['col1'];
+		         	index++;
+		         }
+		         process(results);
+		    },//数据源
+                items: 8,//最多显示个数
+                updater: function (item) {
+                    return item;//这里一定要return，否则选中不显示，外加调用display的时候null reference错误。
+                },
+                displayText: function (item) {
+                    return "选：" + item;//返回字符串
+                },
+                afterSelect: function (item) {
+                    //选择项之后的事件 ，item是当前选中的。
+                },
+                delay: 500//延迟时间
+            });
+        }
+
+        parseLocalArrayData();
